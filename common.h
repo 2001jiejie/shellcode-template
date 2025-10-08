@@ -36,6 +36,7 @@ namespace Hash {
     constexpr DWORD64 VirtualFreeHash = djb2("VirtualFree");
 }
 
+
 typedef struct _PEB_LDR_DATA
 {
     ULONG Length;                                                           //0x0
@@ -169,3 +170,14 @@ typedef int
         _In_opt_ LPCSTR lpText,
         _In_opt_ LPCSTR lpCaption,
         _In_ UINT uType);
+
+
+typedef struct _API_TABLE
+{
+    myCreateFileA fnCreateFileA;
+    myGetFileSize fnGetFileSize;
+    myReadFile fnReadFile;
+    myCloseHandle fnCloseHandle;
+    myVirtualAlloc fnVirtualAlloc;
+    myVirtualFree fnVirtualFree;
+}API_TABLE, * PAPI_TABLE;

