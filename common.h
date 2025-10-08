@@ -3,10 +3,23 @@
 
 PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash);
 
-DWORD64 djb2(char* str)
+
+#define RANDOM_COMPILE_TIME_SEED ( \
+    '0' * -40271 + \
+    __TIME__[7] * 1 + \
+    __TIME__[6] * 31 + \
+    __TIME__[4] * 961 + \
+    __TIME__[2] * 2917 + \
+    __TIME__[0] * 8923 \
+)
+
+#define G_KEY ((RANDOM_COMPILE_TIME_SEED) %0xFF)
+
+
+constexpr DWORD64 djb2(const char* str)
 {
-    DWORD64 dwHash = 0x7734773477347734;
-    INT c;
+    DWORD64 dwHash = G_KEY;
+    INT c=0;
 
     while (c = *str++)
         dwHash = ((dwHash << 0x5) + dwHash) + c;

