@@ -1,0 +1,9 @@
+@"
+.vs/
+x64/
+*.user
+*.suo
+bin/
+obj/
+*.exe
+"@
