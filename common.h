@@ -4,16 +4,16 @@
 PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash);
 
 
-#define RANDOM_COMPILE_TIME_SEED ( \
-    '0' * -40271 + \
-    __TIME__[7] * 1 + \
-    __TIME__[6] * 31 + \
-    __TIME__[4] * 961 + \
-    __TIME__[2] * 2917 + \
-    __TIME__[0] * 8923 \
-)
+constexpr DWORD RandomCompileTimeSeed() {
+    return '0' * -40271 +
+        __TIME__[7] * 1 +
+        __TIME__[6] * 31 +
+        __TIME__[4] * 961 +
+        __TIME__[2] * 2917 +
+        __TIME__[0] * 8923;
+}
 
-#define G_KEY ((RANDOM_COMPILE_TIME_SEED) %0xFF)
+constexpr auto G_KEY = (RandomCompileTimeSeed() % 0xFF);
 
 
 constexpr DWORD64 djb2(const char* str)
@@ -25,6 +25,15 @@ constexpr DWORD64 djb2(const char* str)
         dwHash = ((dwHash << 0x5) + dwHash) + c;
 
     return dwHash;
+}
+
+namespace Hash {
+    constexpr DWORD64 CreateFileAHash = djb2("CreateFileA");
+    constexpr DWORD64 GetFileSizeHash = djb2("GetFileSize");
+    constexpr DWORD64 ReadFileHash = djb2("ReadFile");
+    constexpr DWORD64 CloseHandleHash = djb2("CloseHandle");
+    constexpr DWORD64 VirtualAllocHash = djb2("VirtualAlloc");
+    constexpr DWORD64 VirtualFreeHash = djb2("VirtualFree");
 }
 
 typedef struct _PEB_LDR_DATA
