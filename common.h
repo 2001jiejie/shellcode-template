@@ -1,8 +1,10 @@
 #pragma once
 #include <Windows.h>
 
-PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash);
+#define SEED 5
 
+PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash);
+HMODULE myGetModuleHandle(IN DWORD dwModuleHash);
 
 constexpr DWORD RandomCompileTimeSeed() {
     return '0' * -40271 +
@@ -27,13 +29,41 @@ constexpr DWORD64 djb2(const char* str)
     return dwHash;
 }
 
+// compile time Djb2 hashing function (WIDE)
+constexpr DWORD HashStringDjb2W(const wchar_t* String) {
+    ULONG Hash = (ULONG)G_KEY;
+    INT c = 0;
+    while ((c = *String++)) {
+        if (c >= 'a' && c <= 'z')
+            c -= 32;
+        Hash = ((Hash << SEED) + Hash) + c;
+    }
+
+    return Hash;
+}
+
+// compile time Djb2 hashing function (ASCII)
+constexpr DWORD HashStringDjb2A(const char* String) {
+    ULONG Hash = (ULONG)G_KEY;
+    INT c = 0;
+    while ((c = *String++)) {
+        if (c >= 'a' && c <= 'z')
+            c -= 32;
+        Hash = ((Hash << SEED) + Hash) + c;
+    }
+
+    return Hash;
+}
+
+
 namespace Hash {
-    constexpr DWORD64 CreateFileAHash = djb2("CreateFileA");
-    constexpr DWORD64 GetFileSizeHash = djb2("GetFileSize");
-    constexpr DWORD64 ReadFileHash = djb2("ReadFile");
-    constexpr DWORD64 CloseHandleHash = djb2("CloseHandle");
-    constexpr DWORD64 VirtualAllocHash = djb2("VirtualAlloc");
-    constexpr DWORD64 VirtualFreeHash = djb2("VirtualFree");
+    constexpr DWORD64 CreateFileAHash = HashStringDjb2A("CreateFileA");
+    constexpr DWORD64 GetFileSizeHash = HashStringDjb2A("GetFileSize");
+    constexpr DWORD64 ReadFileHash = HashStringDjb2A("ReadFile");
+    constexpr DWORD64 CloseHandleHash = HashStringDjb2A("CloseHandle");
+    constexpr DWORD64 VirtualAllocHash = HashStringDjb2A("VirtualAlloc");
+    constexpr DWORD64 VirtualFreeHash = HashStringDjb2A("VirtualFree");
+    constexpr DWORD64 Kernel32Hash = HashStringDjb2W(L"KERNEL32.DLL");
 }
 
 

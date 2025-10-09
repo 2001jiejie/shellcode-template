@@ -5,21 +5,7 @@ void myMain()
 
     
 
-#ifdef _WIN64 
-    PPEB pPeb = (PPEB)(__readgsqword(0x60));
-#elif _WIN32 
-    PPEB pPeb = (PPEB)(__readfsdword(0x30));
-#endif
-    PPEB_LDR_DATA pLdr = (PPEB_LDR_DATA)(pPeb->Ldr);
-    PLIST_ENTRY pListEntry = (PLIST_ENTRY)(pLdr->InMemoryOrderModuleList.Flink);
-    PLDR_DATA_TABLE_ENTRY pDte = (PLDR_DATA_TABLE_ENTRY)((PBYTE)pListEntry - 0x10);
-
-    pListEntry = pListEntry->Flink;
-    pDte = (PLDR_DATA_TABLE_ENTRY)((PBYTE)pListEntry - 0x10);
-    pListEntry = pListEntry->Flink;
-    pDte = (PLDR_DATA_TABLE_ENTRY)((PBYTE)pListEntry - 0x10);
-
-    HMODULE kHandle = (HMODULE)(pDte->DllBase);
+    HMODULE kHandle = myGetModuleHandle(Hash::Kernel32Hash);
 
     API_TABLE Api;
 
@@ -68,7 +54,7 @@ PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash) {
         CHAR* pFunctionName = (CHAR*)(pBase + FunctionNameArray[i]);
         PVOID pFunctionAddress = (PVOID)(pBase + FunctionAddressArray[FunctionOrdinalArray[i]]);
 
-        if (dwApiNameHash == djb2(pFunctionName)) {
+        if (dwApiNameHash == HashStringDjb2A(pFunctionName)) {
             return pFunctionAddress;
         }
     }
@@ -76,3 +62,28 @@ PVOID myGetProcAddress(IN HMODULE hModule, DWORD64 dwApiNameHash) {
     return NULL;
 }
 
+HMODULE myGetModuleHandle(IN DWORD dwModuleHash) {
+#ifdef _WIN64
+    PPEB pPeb = (PPEB)(__readgsqword(0x60));
+#else
+    PPEB pPeb = (PPEB)(__readfsdword(0x30));
+#endif 
+
+    PPEB_LDR_DATA pLdr = pPeb->Ldr;
+    PLIST_ENTRY pListHead = &pLdr->InMemoryOrderModuleList;
+    PLIST_ENTRY pListNode = pListHead->Flink;
+
+    // 遍历模块列表
+    while (pListNode != pListHead) {
+        // 通过偏移获取LDR_DATA_TABLE_ENTRY
+        PLDR_DATA_TABLE_ENTRY pDte = (PLDR_DATA_TABLE_ENTRY)
+            ((PBYTE)pListNode - 0x10);
+
+        if (HashStringDjb2W(pDte->BaseDllName.Buffer) == dwModuleHash) {
+            return (HMODULE)(pDte->DllBase);
+        }
+
+        pListNode = pListNode->Flink;  // 移动到下一个节点
+    }
+    return NULL;
+}
