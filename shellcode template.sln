@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shellcode template", "shell
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shellcode loader", "shellcode loader\shellcode loader.vcxproj", "{FEE3D1F3-A33A-4EE3-B7E1-2890CDA1650B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stager_shellcode", "stager_shellcode\stager_shellcode.vcxproj", "{63E0DF66-57CC-4217-84CB-10E45D602006}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{FEE3D1F3-A33A-4EE3-B7E1-2890CDA1650B}.Release|x64.Build.0 = Release|x64
 		{FEE3D1F3-A33A-4EE3-B7E1-2890CDA1650B}.Release|x86.ActiveCfg = Release|Win32
 		{FEE3D1F3-A33A-4EE3-B7E1-2890CDA1650B}.Release|x86.Build.0 = Release|Win32
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Debug|x64.ActiveCfg = Debug|x64
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Debug|x64.Build.0 = Debug|x64
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Debug|x86.ActiveCfg = Debug|Win32
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Debug|x86.Build.0 = Debug|Win32
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Release|x64.ActiveCfg = Release|x64
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Release|x64.Build.0 = Release|x64
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Release|x86.ActiveCfg = Release|Win32
+		{63E0DF66-57CC-4217-84CB-10E45D602006}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

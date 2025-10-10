@@ -4,7 +4,7 @@
 #define _STRUCTS_H
 
 #include <Windows.h>
-
+#include <wininet.h>
 typedef struct _LSA_UNICODE_STRING {
 	USHORT Length;
 	USHORT MaximumLength;
